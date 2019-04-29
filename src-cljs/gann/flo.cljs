@@ -53,8 +53,7 @@
          [:select {:name "Color"
                    :class "form-control"
                    :value @fill
-                   :on-change (fn [e] (emit :color-changed
-                                           {:color (->> e .-target .-value)}))}
+                   :on-change #(reset! fill (-> % .-target .-value))}
           (for [c colors]
 [:option {:value c :key c} c])]]))))
 
@@ -71,16 +70,16 @@
             :min min
             :max max
             :value @v
-            :on-change (fn [e] (emit :dimension-changed
-{:cursor v :value (-> e .-target .-value)}))}]])
+            :on-change #(reset! v (-> % .-target .-value))
+            }]])
 
 
 (defonce app-db (atom {:x 360 :y 200 :radius 50 :fill "black" :clicks 0}))
 
-(defn fib-line [y x width]
+(defn fib-line [y x width color]
       [:line { :y1 y :y2 y
                :x1 x  :x2 (+ x width)  
-               :style {:stroke "rgb(255,0,0)" :stroke-width 2}}])
+               :style {:stroke color :stroke-width 2}}])
 
 
 (defn lines []
@@ -89,12 +88,12 @@
     [:line {:x1 100 :y1 200 :x2 500 :y2 200 :style {:stroke "rgb(255,0,0)" :stroke-width 2}}]])
 
 
-(defn fib-sr [x width]
+(defn fib-sr [x width color]
   "fibonacci support-resistence"
   (let [fibs [3.6 2.6 1.6 1.0 0.62 0.36]]
     (fn [] 
       [:g
-        (for [y fibs] [fib-line (* 100 y) x width ])
+        (for [y fibs] [fib-line (* 100 y) x width color ])
       ])))
  
  
@@ -108,56 +107,40 @@
 
 
 (defn demo []
- (let [x (r/atom 20)
-       fill (r/atom "red")
-       view-size 400
-       size 600
- ]
+ (let [size 600
+       view-size (r/atom 400)
+       fill (r/atom "green")
+      ]
   (fn [] 
     [:center
       [:svg {:x 0 :y 0 
              :width size :height size 
-             :view-box (str "0 0 " view-size " " view-size)
+             :view-box (str "0 0 " @view-size " " @view-size)
              :style {:background-color "gray"}
              }
-        [:rect {:x 10 :y 10 :width 10 :height 10}]
+        [:rect {:x 10 :y 10 :width 10 :height 10 :style {:fill @fill}}]
         [:rect {:x 100 :y 50 :width 30 :height 30}]
-        [:rect {:x 200 :y 50 :width 30 :height 30 :style {:fill "red"}}]
+        [:rect {:x 200 :y 50 :width 30 :height 30 :style {:fill @fill}}]
         [:rect {:x 300 :y 10 :width 30 :height 30 :style {:fill "blue"}}]
         [:circle
           {:r 0.35
             :stroke "green"
-            :stroke-width 500
+            :stroke-width 400
             :fill "none"
             :cx 100
             :cy 150
             }]
-        [fib-sr 50 50]
-        [fib-sr 200 50]
-        [fib-sr 300 50]
+        [fib-sr 50 50 @fill]
+        [fib-sr 200 50 "rgb(255,0,0)"]  ;red
+        [fib-sr 300 50 "blue"]
+        [fib-sr 10 30 @fill]
       ]
-      [range-component x 0 720 "CX"]
+      [range-component view-size 0 size "view-size"]
       [select-component fill]
+      [:p (str "Color: " @fill)]
+      [:p (str "View-Size: " @view-size)]
       ]
       )))
      
 
-
-
-(defn demo2 []       
-  (let [x (r/atom 20)]
-  (fn [] 
-    [:center
-
-      [:svg
-         {:view-box (str "0 0 " size " " size)
-          :width 1000
-          :height 1000}
-        [circle 3 3]
-        [circle 2 2]    
-        [cross 1 1]
-      ]
-       [range-component x 0 720 "CX"]
-      
-  ])))
 
