@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <title>Seasonator</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Material-UI -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- HighCharts -->
+    <script src="http://code.highcharts.com/highcharts.js" type="text/javascript"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js" type="text/javascript"></script>
+
+
+    <link href="css/financials.css" rel="stylesheet" type="text/css">
+  </head>
+
+  <body>
+    <div id="app"> </div>
+
+    <!-- Reagent App has to be after the app div; otherwise sometimes the div is not read when Application is ready-->
+    <script src="cljs-out/dev-main.js" type="text/javascript"></script>
+
+    <canvas id="foo">   </canvas>
+
+  </body>
+
+</html>
+
